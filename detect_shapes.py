@@ -19,6 +19,7 @@ ap.add_argument("-d", "--dict", required=True,
 args = vars(ap.parse_args())"""
 
 def boardParser(image, dictionary):
+	# image for testing purposes is test.jpg
 	# load the image and resize it to a smaller factor so that
 	# the shapes can be approximated better
 	image = cv2.imread(image)
@@ -57,7 +58,7 @@ def boardParser(image, dictionary):
 		x,y,w,h = cv2.boundingRect(c)
 
 		# crop & pass the output image
-		crop = image[y:y+100, x:x+w]
+		crop = image[12:295, 11:210]
 		#cv2.imshow("Image", crop)
 		#cv2.waitKey(0)
 		element = ocrino.ocrino(crop, dictionary)
