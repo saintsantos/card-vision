@@ -22,7 +22,7 @@ def boardParser(image, dictionary):
 	# image for testing purposes is test.jpg
 	# load the image and resize it to a smaller factor so that
 	# the shapes can be approximated better
-	image = cv2.imread(image)
+	image = cv2.imread(image, 1)
 	resized = imutils.resize(image, width=300)
 	ratio = image.shape[0] / float(resized.shape[0])
 
@@ -40,6 +40,7 @@ def boardParser(image, dictionary):
 	sd = ShapeDetector()
 	output = []
 	# loop over the contours
+	print(len(cnts))
 	for c in cnts:
 		# compute the center of the contour, then detect the name of the
 		# shape using only the contour
@@ -58,10 +59,9 @@ def boardParser(image, dictionary):
 		x,y,w,h = cv2.boundingRect(c)
 
 		# crop & pass the output image
-		crop = image[12:295, 11:210]
+		crop = image[40:170, 30:200]
 		#cv2.imshow("Image", crop)
 		#cv2.waitKey(0)
 		element = ocrino.ocrino(crop, dictionary)
 		output.append(element)
-	print(output)
 	return output
