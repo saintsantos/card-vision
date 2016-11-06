@@ -7,16 +7,20 @@ import argparse
 import imutils
 import cv2
 import numpy as np
+from matplotlib import pyplot as plt
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True,
 	help="path to the input image")
+ap.add_argument("-d", "--dict", required=True,
+	help="path to dictionary file")
 args = vars(ap.parse_args())
 
 # load the image and resize it to a smaller factor so that
 # the shapes can be approximated better
 image = cv2.imread(args["image"])
+dictionary = args["dict"]
 resized = imutils.resize(image, width=300)
 ratio = image.shape[0] / float(resized.shape[0])
 
@@ -56,7 +60,7 @@ for c in cnts:
 	x,y,w,h = cv2.boundingRect(c)
 	rect = cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2)
 	rect = np.int0(rect)
-	print rect
+	
 	#cv2.drawContours(image, [box], -1, (0, 255, 0), 2)
 	#crop it
 	#crop_img = image[200:400, 100:300]
