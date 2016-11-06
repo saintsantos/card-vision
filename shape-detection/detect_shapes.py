@@ -47,12 +47,21 @@ for c in cnts:
 	c = c.astype("float")
 	c *= ratio
 	c = c.astype("int")
-	#replace this with my cropper
-	rect = cv2.minAreaRect(c)
-	box = cv2.boxPoints(rect)
-	box = np.int0(box)
-	cv2.drawContours(image, [c], -1, (0, 255, 0), 2)
+	
+	#get ready to crop
+	#rect = cv2.minAreaRect(c)
+	#box = cv2.boxPoints(rect)
+	#box = np.int0(box)
+	
+	x,y,w,h = cv2.boundingRect(c)
+	rect = cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2)
+	rect = np.int0(rect)
+	print rect
+	#cv2.drawContours(image, [box], -1, (0, 255, 0), 2)
+	#crop it
+	#crop_img = image[200:400, 100:300]
 
 	# show the output image
-	cv2.imshow("Image", image)
+	crop = image[y:y+h, x:x+w]
+	cv2.imshow("Image", crop)
 	cv2.waitKey(0)
