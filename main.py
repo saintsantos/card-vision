@@ -1,4 +1,4 @@
-import tappedout
+import parse_html.tappedout as tappedout
 import sys
 import pprint
 

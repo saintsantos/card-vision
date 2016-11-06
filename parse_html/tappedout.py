@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import urllib.request
 
-
+#http://tappedout.net/mtg-decks/count-von-count-counting-on-counters/
 
 def generateDeck(url):
     html = urllib.request.urlopen(url).read()
