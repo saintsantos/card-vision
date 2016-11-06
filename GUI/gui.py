@@ -12,8 +12,26 @@ global sv
 global landnum
 global cardnum
 
+class BState:
+    def __init__(self):
+        self.my_life = 20
+        self.my_poison = 0
+        self.op_life = 20
+        self.op_poison = 0
+        self.cards = []
+
 class GUI:
+
     def __init__(self, master):
+        self.bstate = BState()
+        self.toplevel = Toplevel()
+        self.toplevel.destroy()
+        #Keeps track of how many cards are on the board for while adding cards
+        self.card_count = 0
+        self.land_count = 0
+
+        self.images = []
+
         self.master = master
         master.title("Card-Vision")
 
@@ -55,15 +73,17 @@ class GUI:
 
 
 
-        self.label = Label(master, text='Life', font=("Courier", 33), borderwidth=5, bg='grey').grid(row=0,column=0,columnspan=3)
-        self.label = Label(master, text='20', font=("Courier", 44), borderwidth=5, bg='grey' ).grid(row=1,column=1)
-        self.serv_button = Button(master, text="+", command='', bg='grey').grid(row=1,column=0)
-        self.serv_button = Button(master, text="-", command='', bg='grey').grid(row=1,column=2)
+        self.my_life_label = Label(master, text='Life', font=("Courier", 33), borderwidth=5, bg='grey').grid(row=0,column=0,columnspan=3)
+        self.my_life_number = Label(master, text='20', font=("Courier", 44), borderwidth=5, bg='grey' )
+        self.my_life_number.grid(row=1,column=1)
+        self.life_plus = Button(master, text="+", command= lambda: self.adjust_counters(1,0,1), bg='grey').grid(row=1,column=0)
+        self.life_minus = Button(master, text="-", command=lambda: self.adjust_counters(1,0,0), bg='grey').grid(row=1,column=2)
 
-        self.label = Label(master, text='Poison', font=("Courier", 33), borderwidth=5, bg='grey' ).grid(row=3,column=0,columnspan=3)
-        self.label = Label(master, text='10', font=("Courier", 44), borderwidth=5, bg='grey' ).grid(row=4,column=1)
-        self.serv_button = Button(master, text="+", command='').grid(row=4,column=0)
-        self.serv_button = Button(master, text="-", command='').grid(row=4,column=2)
+        self.my_poison_label = Label(master, text='Poison', font=("Courier", 33), borderwidth=5, bg='grey' ).grid(row=3,column=0,columnspan=3)
+        self.my_poison_number = Label(master, text='0', font=("Courier", 44), borderwidth=5, bg='grey' )
+        self.my_poison_number.grid(row=4,column=1)
+        self.poison_plus = Button(master, text="+", command=lambda: self.adjust_counters(0,0,1)).grid(row=4,column=0)
+        self.poison_minus = Button(master, text="-", command=lambda: self.adjust_counters(0,0,0)).grid(row=4,column=2)
 
         # for n in range(5,20):
         #     self.label = Label(master, text='', borderwidth=5 ).grid(row=n,column=0)
@@ -75,24 +95,27 @@ class GUI:
         # self.label = Label(master, text='', borderwidth=8 ).grid(row=8,column=0)
         #
 
-        self.label = Label(master, text='Life', font=("Courier", 28), borderwidth=5, bg='grey').grid(row=45,column=0,columnspan=3)
-        self.label = Label(master, text='20', font=("Courier", 33), borderwidth=5 , bg='grey').grid(row=46,column=1)
-        self.serv_button = Button(master, text="+", command='').grid(row=46,column=0)
-        self.serv_button = Button(master, text="-", command='').grid(row=46,column=2)
+        self.op_life_label = Label(master, text='Life', font=("Courier", 28), borderwidth=5, bg='grey').grid(row=45,column=0,columnspan=3)
+        self.op_life_number = Label(master, text='20', font=("Courier", 33), borderwidth=5 , bg='grey')
+        self.op_life_number.grid(row=46,column=1)
+        self.life_plus = Button(master, text="+", command=lambda: self.adjust_counters(1,1,1)).grid(row=46,column=0)
+        self.life_minus = Button(master, text="-", command=lambda: self.adjust_counters(1,1,0)).grid(row=46,column=2)
 
-        self.label = Label(master, text='Poison', font=("Courier", 28), borderwidth=5 , bg='grey').grid(row=47,column=0,columnspan=3)
-        self.label = Label(master, text='10', font=("Courier", 33), borderwidth=5 , bg='grey').grid(row=48,column=1)
-        self.serv_button = Button(master, text="+", command='').grid(row=48,column=0)
-        self.serv_button = Button(master, text="-", command='').grid(row=48,column=2)
+        self.op_poison_label = Label(master, text='Poison', font=("Courier", 28), borderwidth=5 , bg='grey').grid(row=47,column=0,columnspan=3)
+        self.op_poison_number = Label(master, text='0', font=("Courier", 33), borderwidth=5 , bg='grey')
+        self.op_poison_number.grid(row=48,column=1)
+        self.poison_plus = Button(master, text="+", command=lambda: self.adjust_counters(0,1,1)).grid(row=48,column=0)
+        self.poison_minus = Button(master, text="-", command=lambda: self.adjust_counters(0,1,0)).grid(row=48,column=2)
 
         landnum = 0
         cardnum = 0
 
-        self.add_card("CMD/Afterlife.full.jpg",0,1)
-        self.add_card("CMD/Afterlife.full.jpg",1,1)
-        self.add_card("CMD/Afterlife.full.jpg",3,2)
-        self.add_card("CMD/Afterlife.full.jpg",3,1)
-        self.add_card("CMD/Afterlife.full.jpg",2,1)
+        for x in range(0,11):
+            self.add_card("Afterlife","CMD",0)
+        self.add_card("Attrition", "CMD", 1)
+        self.add_card("Attrition", "CMD", 1)
+        self.add_card("Attrition", "CMD", 1)
+
         # basewidth = 120
         # img = Image.open("CMD/Afterlife.full.jpg")
         # wpercent = (basewidth/float(img.size[0]))
@@ -134,20 +157,89 @@ class GUI:
         global m
         m = master
 
-    def add_card(self, card, r, c):
+    def adjust_counters(self, life, opponent, add):
+        if life:
+            if opponent:
+                if add:
+                    self.bstate.op_life += 1
+                else:
+                    self.bstate.op_life -= 1
+            else:
+                if add:
+                    self.bstate.my_life += 1
+                else:
+                    self.bstate.my_life -= 1
+        else:
+            if opponent:
+                if add:
+                    self.bstate.op_poison += 1
+                else:
+                    self.bstate.op_poison -= 1
+            else:
+                if add:
+                    self.bstate.my_poison += 1
+                else:
+                    self.bstate.my_poison -= 1
+        print('hullo!')
+        self.op_life_number.config(text=(self.bstate.op_life))
+        self.op_poison_number.config(text=(self.bstate.op_poison))
+        self.my_life_number.config(text=(self.bstate.my_life))
+        self.my_poison_number.config(text=(self.bstate.my_poison))
+
+
+        #should take in the card name and three set code and form file name from that, then boolian for if it's a land
+    def add_card(self, card, setn, land):
+
         basewidth = 120
         #if (type = 'Land')
 
-        img = Image.open(card)
+        img = Image.open(setn+"/"+card+".full.jpg")
         wpercent = (basewidth/float(img.size[0]))
         hsize = int((float(img.size[1])*float(wpercent)))
         img = img.resize((basewidth,hsize), PIL.Image.ANTIALIAS)
-
         img = ImageTk.PhotoImage(img)
-        #img = img.ImageOps.fit(img, 50, Image.ANTIALIAS)
         self.ilabel = Label(self.master, image = img)
-        self.ilabel.grid(row=11*r,column=7*c, rowspan=8)
+
+        if land:
+            self.land_count += 1
+            if self.land_count > 9:
+                self.ilabel.grid(row=0,column=10*self.land_count%9, rowspan=2)
+            else:
+                self.ilabel.grid(row=0,column=10*self.land_count, rowspan=2)
+
+        else:
+            self.card_count += 1
+            if self.card_count > 9:
+                self.ilabel.grid(row=5*(1+ self.card_count//9),column=10*(self.card_count%9), rowspan=8)
+            else:
+                self.ilabel.grid(row=3,column=10*self.card_count, rowspan=8)
+        self.ilabel.bind("<Enter>", lambda event: self.on_enter(setn+"/"+card+".full.jpg"))
+        self.ilabel.bind("<Leave>", self.on_leave)
+
+
+        #img = img.ImageOps.fit(img, 50, Image.ANTIALIAS)
         self.ilabel.img = img
+
+
+    def on_enter(self, path):
+        self.toplevel = Toplevel()
+        hs = root.winfo_screenheight()
+        h = 285
+        w = 199
+        y = (hs/2) - (h/2)
+        self.toplevel.geometry('%dx%d+%d+%d' % (w, h, 0, y))
+        self.toplevel.overrideredirect(1)
+    #    center(toplevel)
+        im = Image.open(path)
+        background_image = ImageTk.PhotoImage(im)
+        self.background_label = Label(self.toplevel, image=background_image)
+        self.background_label.im = background_image
+        self.background_label.pack()
+        print('enter')
+
+    def on_leave(self, enter):
+        print('leave')
+        self.toplevel.destroy()
 
     # Function for toggling fullscreen
     def toggle_fullscreen(self, event=None):
@@ -161,8 +253,7 @@ class GUI:
         self.master.attributes("-fullscreen", False)
         return "break"
 
-    def greet(self):
-        print("Greetings!")
+
 
     def cli(self):
         #_thread.start_new_thread( client, (self.ip_entry.get(),int(self.port_entry.get()) ))

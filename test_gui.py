@@ -25,7 +25,7 @@ class Board:
         self.master.rowconfigure(0, weight=1)
         self.master.rowconfigure(1, weight=1)
 
-        basewidth = 1790                             # set a base width for resize
+        basewidth = 1920                             # set a base width for resize
         im = Image.open('background.jpg')
 
 
