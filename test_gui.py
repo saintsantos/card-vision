@@ -38,14 +38,14 @@ class Board:
         self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
         self.background_label.im = background_image
 
-        self.label1 = Label(master, text="1")
-        self.label1.grid(row=0, column=0)
-        self.label2 = Label(master, text="2")
-        self.label2.grid(row=0, column=12)
-        self.label3 = Label(master, text="3")
-        self.label3.grid(row=12, column=0)
-        self.label4 = Label(master, text="4")
-        self.label4.grid(row=12, column=12)
+        # self.label1 = Label(master, text="1")
+        # self.label1.grid(row=0, column=0)
+        # self.label2 = Label(master, text="2")
+        # self.label2.grid(row=0, column=12)
+        # self.label3 = Label(master, text="3")
+        # self.label3.grid(row=12, column=0)
+        # self.label4 = Label(master, text="4")
+        # self.label4.grid(row=12, column=12)
 
         opened = Image.open('BlackLotus.jpg')
         img = ImageTk.PhotoImage(opened)

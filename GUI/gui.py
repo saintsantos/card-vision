@@ -9,14 +9,15 @@ from PIL import Image
 
 
 global sv
-
+global landnum
+global cardnum
 
 class GUI:
     def __init__(self, master):
         self.master = master
         master.title("Card-Vision")
 
-        self.master.configure(background='grey')
+        #self.master.configure(background='grey')
 
         # This is full screen stuff
         self.state = True
@@ -38,6 +39,20 @@ class GUI:
 
         for y in range(0, 50):
             self.master.rowconfigure(y,weight=1)
+
+        basewidth = 1920                             # set a base width for resize
+        im = Image.open('../background.jpg')
+
+
+        wpercent = (basewidth/float(im.size[0]))
+        hsize = int((float(im.size[1])*float(wpercent)))
+        im = im.resize((basewidth,hsize), PIL.Image.ANTIALIAS)
+
+        background_image = ImageTk.PhotoImage(im)
+        self.background_label = Label(master, image=background_image)
+        self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
+        self.background_label.im = background_image
+
 
 
         self.label = Label(master, text='Life', font=("Courier", 33), borderwidth=5, bg='grey').grid(row=0,column=0,columnspan=3)
@@ -70,7 +85,8 @@ class GUI:
         self.serv_button = Button(master, text="+", command='').grid(row=48,column=0)
         self.serv_button = Button(master, text="-", command='').grid(row=48,column=2)
 
-
+        landnum = 0
+        cardnum = 0
 
         self.add_card("CMD/Afterlife.full.jpg",0,1)
         self.add_card("CMD/Afterlife.full.jpg",1,1)
@@ -120,6 +136,8 @@ class GUI:
 
     def add_card(self, card, r, c):
         basewidth = 120
+        #if (type = 'Land')
+
         img = Image.open(card)
         wpercent = (basewidth/float(img.size[0]))
         hsize = int((float(img.size[1])*float(wpercent)))
