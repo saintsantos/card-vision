@@ -12,6 +12,10 @@ class Network:
         self.master = master
         master.title("Card-Vision")
 
+        self.state = False
+        self.master.bind("<F10>", self.toggle_fullscreen)
+        self.master.bind("<Escape>", self.end_fullscreen)
+
         self.label = Label(master, text="Select if you'd like to listen or connect:")
         self.label.pack()
 
@@ -40,6 +44,17 @@ class Network:
         self.close_button.pack()
         global m
         m = master
+
+
+    def toggle_fullscreen(self, event=None):
+        self.state = not self.state  # Just toggling the boolean
+        self.master.attributes("-fullscreen", self.state)
+        return "break"
+
+    def end_fullscreen(self, event=None):
+        self.state = False
+        self.master.attributes("-fullscreen", False)
+        return "break"
 
     def greet(self):
         print("Greetings!")

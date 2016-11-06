@@ -1,3 +1,4 @@
+import PIL
 from tkinter import *
 from PIL import Image, ImageTk
 
@@ -24,7 +25,14 @@ class Board:
         self.master.rowconfigure(0, weight=1)
         self.master.rowconfigure(1, weight=1)
 
+        basewidth = 1790                             # set a base width for resize
         im = Image.open('background.jpg')
+
+
+        wpercent = (basewidth/float(im.size[0]))
+        hsize = int((float(im.size[1])*float(wpercent)))
+        im = im.resize((basewidth,hsize), PIL.Image.ANTIALIAS)
+
         background_image = ImageTk.PhotoImage(im)
         self.background_label = Label(master, image=background_image)
         self.background_label.place(x=0, y=0, relwidth=1, relheight=1)
