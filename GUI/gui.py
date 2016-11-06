@@ -9,8 +9,6 @@ from PIL import Image
 
 
 global sv
-global landnum
-global cardnum
 
 class BState:
     def __init__(self):
@@ -202,10 +200,10 @@ class GUI:
         cardnum = 0
 
         for x in range(0,11):
-            self.add_card("Afterlife","CMD",0)
-        self.add_card("Attrition", "CMD", 1)
-        self.add_card("Attrition", "CMD", 1)
-        self.add_card("Attrition", "CMD", 1)
+            self.add_card("Afterlife","CMD",0,0)
+        self.add_card("Attrition", "CMD", 1, 1)
+        self.add_card("Attrition", "CMD", 1, 0)
+        self.add_card("Attrition", "CMD", 1, 1)
 
 
         global m
@@ -242,12 +240,13 @@ class GUI:
 
 
         #should take in the card name and three set code and form file name from that, then boolian for if it's a land
-    def add_card(self, card, setn, land):
+    def add_card(self, card, setn, land, isTapped):
 
         basewidth = 120
-        #if (type = 'Land')
 
         img = Image.open(setn+"/"+card+".full.jpg")
+        if isTapped:
+            img = img.rotate(90, expand=True)
         wpercent = (basewidth/float(img.size[0]))
         hsize = int((float(img.size[1])*float(wpercent)))
         img = img.resize((basewidth,hsize), PIL.Image.ANTIALIAS)
@@ -257,7 +256,7 @@ class GUI:
         if land:
             self.land_count += 1
             if self.land_count > 9:
-                self.ilabel.grid(row=0,column=10*self.land_count%9, rowspan=2)
+                self.ilabel.grid(row=0,column=10*self.land_count%9)
             else:
                 self.ilabel.grid(row=0,column=10*self.land_count, rowspan=2)
 
