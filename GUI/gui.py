@@ -20,8 +20,115 @@ class BState:
         self.op_poison = 0
         self.cards = []
 
-class GUI:
+class Network:
+    def __init__(self, master):
+        self.master = master
+        master.title("Card-Vision")
 
+        self.state = False
+        self.master.bind("<F10>", self.toggle_fullscreen)
+        self.master.bind("<Escape>", self.end_fullscreen)
+
+        self.label = Label(master, text="Select if you'd like to listen or connect:")
+        self.label.pack()
+
+
+        self.cli_button = Button(master, text="Client", command=self.cli)
+        self.cli_button.pack()
+
+        self.serv_button = Button(master, text="Server", command=self.serv)
+        self.serv_button.pack()
+
+        self.ip_entry = Entry(master, width=24)
+        self.port_entry = Entry(master, width=24)
+        self.ip_label = Label(master, text="Peer IP:")
+        self.port_label = Label(master, text="Peer Port:")
+        self.connect_button = Button(master, text="Connect", command=self.con)
+
+        self.port_listen_label = Label(master, text="Listen on port:")
+        self.listen_button = Button(master, text="Listen", command=self.lis)
+
+        self.listening_label = Label(master, text="You are listening for your peer...")
+        self.cancel_button = Button(master, text="Cancel", command=self.canc)
+
+        self.connected_label = Label(master, text="You are connected!")
+
+        self.close_button = Button(master, text="Close", command=master.quit)
+        self.close_button.pack()
+        global m
+        m = master
+
+
+    def toggle_fullscreen(self, event=None):
+        self.state = not self.state  # Just toggling the boolean
+        self.master.attributes("-fullscreen", self.state)
+        return "break"
+
+    def end_fullscreen(self, event=None):
+        self.state = False
+        self.master.attributes("-fullscreen", False)
+        return "break"
+
+    def greet(self):
+        print("Greetings!")
+
+    def cli(self):
+        #_thread.start_new_thread( client, (self.ip_entry.get(),int(self.port_entry.get()) ))
+
+        print("You are now a client!")
+        self.label.pack_forget()
+        self.cli_button.pack_forget()
+        self.serv_button.pack_forget()
+        self.close_button.pack_forget()
+
+        self.ip_label.pack()
+        self.ip_entry.pack()
+        self.port_label.pack()
+        self.port_entry.pack()
+        self.connect_button.pack()
+        self.close_button.pack()
+
+    def con(self):
+        _thread.start_new_thread( client, (self.ip_entry.get(),int(self.port_entry.get()) ))
+
+    def serv(self):
+        #_thread.start_new_thread( server, (12345,) )
+        print("You are now the server!")
+        for widget in self.master.winfo_children():
+            widget.pack_forget()
+
+
+        self.port_listen_label.pack()
+        self.port_entry.pack()
+        self.listen_button.pack()
+        self.close_button.pack()
+
+    def lis(self):
+        for widget in self.master.winfo_children():
+            widget.pack_forget()
+        _thread.start_new_thread( server, (int(self.port_entry.get()),) )
+        self.listening_label.pack()
+        self.cancel_button.pack()
+        self.close_button.pack()
+
+    def canc(self):
+        for widget in self.master.winfo_children():
+            widget.pack_forget()
+
+        self.label.pack()
+        self.cli_button.pack()
+        self.serv_button.pack()
+        self.close_button.pack()
+
+    def connected(self):
+        for widget in self.master.winfo_children():
+            widget.pack_forget()
+        self.connected_label.pack()
+        GUI(Toplevel())
+        #self.master.destroy()
+
+
+class GUI:
     def __init__(self, master):
         self.bstate = BState()
         self.toplevel = Toplevel()
@@ -43,15 +150,7 @@ class GUI:
         self.master.bind("<F10>", self.toggle_fullscreen)
         self.master.bind("<Escape>", self.end_fullscreen)
 
-        # x1 = 0
-        # x2 = 450
-        # for k in range(0, 500, 50):
-        #     y1 = k
-        #     y2 = k
-        #     self.line = canvas.create_line(x1, y1, x2, y2)
 
-        # for r in range(15):
-        #     for c in range(8):
         for x in range(0, 100):
             self.master.columnconfigure(x,weight=1)
 
@@ -85,15 +184,7 @@ class GUI:
         self.poison_plus = Button(master, text="+", command=lambda: self.adjust_counters(0,0,1)).grid(row=4,column=0)
         self.poison_minus = Button(master, text="-", command=lambda: self.adjust_counters(0,0,0)).grid(row=4,column=2)
 
-        # for n in range(5,20):
-        #     self.label = Label(master, text='', borderwidth=5 ).grid(row=n,column=0)
-        # self.label = Label(master, text='', borderwidth=6 ).grid(row=6,column=0)
-        # self.label = Label(master, text='', borderwidth=7 ).grid(row=7,column=0)
-        # self.label = Label(master, text='', borderwidth=8 ).grid(row=8,column=0)
-        # self.label = Label(master, text='', borderwidth=8 ).grid(row=8,column=0)
-        # self.label = Label(master, text='', borderwidth=8 ).grid(row=8,column=0)
-        # self.label = Label(master, text='', borderwidth=8 ).grid(row=8,column=0)
-        #
+
 
         self.op_life_label = Label(master, text='Life', font=("Courier", 28), borderwidth=5, bg='grey').grid(row=45,column=0,columnspan=3)
         self.op_life_number = Label(master, text='20', font=("Courier", 33), borderwidth=5 , bg='grey')
@@ -116,44 +207,7 @@ class GUI:
         self.add_card("Attrition", "CMD", 1)
         self.add_card("Attrition", "CMD", 1)
 
-        # basewidth = 120
-        # img = Image.open("CMD/Afterlife.full.jpg")
-        # wpercent = (basewidth/float(img.size[0]))
-        # hsize = int((float(img.size[1])*float(wpercent)))
-        # img = img.resize((basewidth,hsize), PIL.Image.ANTIALIAS)
-        #
-        # img = ImageTk.PhotoImage(img)
-        # #img = img.ImageOps.fit(img, 50, Image.ANTIALIAS)
-        # self.ilabel = Label(master, image = img)
-        # self.ilabel.grid(row=0,column=25, rowspan=8)
-        # self.ilabel.img = img
 
-        # self.label = Label(master, text="Select if you'd like to listen or connect:")
-        # self.label.pack()
-        #
-        #
-        # self.cli_button = Button(master, text="Client", command=self.cli)
-        # self.cli_button.pack()
-        #
-        # self.serv_button = Button(master, text="Server", command=self.serv)
-        # self.serv_button.pack()
-        #
-        # self.ip_entry = Entry(master, width=24)
-        # self.port_entry = Entry(master, width=24)
-        # self.ip_label = Label(master, text="Peer IP:")
-        # self.port_label = Label(master, text="Peer Port:")
-        # self.connect_button = Button(master, text="Connect", command=self.con)
-        #
-        # self.port_listen_label = Label(master, text="Listen on port:")
-        # self.listen_button = Button(master, text="Listen", command=self.lis)
-        #
-        # self.listening_label = Label(master, text="You are listening for your peer...")
-        # self.cancel_button = Button(master, text="Cancel", command=self.canc)
-        #
-        # self.connected_label = Label(master, text="You are connected!")
-        #
-        # self.close_button = Button(master, text="Close", command=master.quit)
-        # self.close_button.pack()
         global m
         m = master
 
@@ -366,10 +420,10 @@ def server(port):
                     input.remove(s)
     sv.close()
 
-
+global root
 root = Tk()
 global my_gui
-my_gui = GUI(root)
+my_gui = Network(root)
 #_thread.start_new_thread( server, (1234,) )
 #_thread.start_new_thread( root.mainloop, () )
 #server()
