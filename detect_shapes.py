@@ -59,9 +59,9 @@ def boardParser(image, dictionary):
         x, y, w, h = cv2.boundingRect(c)
 
         # crop & pass the output image
-        crop = image[40:170, 30:200]
-        # cv2.imshow("Image", crop)
-        # cv2.waitKey(0)
+        crop = image[y:y+h, x:x+w]
+        cv2.imshow("Image", crop)
+        cv2.waitKey(0)
         element = ocrino.ocrino(crop, dictionary)
         output.append(element)
     return output
