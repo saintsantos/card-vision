@@ -18,6 +18,15 @@ def generateDeck(url):
 		card["type"] = x["data-category"]
 		num = x.get_text()
 		card["number"] = num[0]
+		if card_name == "Mutagenic Growth" :
+			card["set name"] = "NPH"
+			set_code = "NPH"
+		if card_name == "Vines of Vastwood":
+			card["set name"] = "MM2"
+			set_code = "MM2"
+		if card_name == "Necropede":
+			card["set name"] == "SOM"
+			set_code = "SOM"
 		#print("".join([set_code, "/", final_card_name, ".jpg"]))
 		card["image_location"] = "".join([set_code, "/", final_card_name, ".full", ".jpg"])
 		deck[final_card_name] = card

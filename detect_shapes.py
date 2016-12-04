@@ -8,6 +8,7 @@ import imutils
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+import compare as compare
 
 # construct the argument parse and parse the arguments
 """ap = argparse.ArgumentParser()
@@ -22,7 +23,7 @@ def boardParser(image, dictionary):
 	# image for testing purposes is test.jpg
 	# load the image and resize it to a smaller factor so that
 	# the shapes can be approximated better
-	image = cv2.imread(image, 1)
+	#image = cv2.imread(image, 1)
 	resized = imutils.resize(image, width=300)
 	ratio = image.shape[0] / float(resized.shape[0])
 
@@ -45,6 +46,8 @@ def boardParser(image, dictionary):
 		# compute the center of the contour, then detect the name of the
 		# shape using only the contour
 		M = cv2.moments(c)
+		if M["m00"] == 0:
+			continue
 		cX = int((M["m10"] / M["m00"]) * ratio)
 		cY = int((M["m01"] / M["m00"]) * ratio)
 		shape = sd.detect(c)
@@ -59,9 +62,9 @@ def boardParser(image, dictionary):
 		x,y,w,h = cv2.boundingRect(c)
 
 		# crop & pass the output image
-		crop = image[40:170, 30:200]
+		crop = image[y:y+h, x:x+w]
 		#cv2.imshow("Image", crop)
 		#cv2.waitKey(0)
-		element = ocrino.ocrino(crop, dictionary)
+		element = compare.compare(crop, dictionary)
 		output.append(element)
 	return output
